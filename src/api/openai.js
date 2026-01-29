@@ -1,16 +1,5 @@
-const OPENAI_ENDPOINT = "https://api.openai.com/v1/chat/completions";
+const OPENAI_ENDPOINT = "https://embarkapi.inkpot2001.workers.dev/";
 const OPENAI_MODEL = "gpt-3.5-turbo";
-const OPENAI_API_KEY_PLACEHOLDER = "sk-proj-NGnAeUoaoDcpsaV4aiG_R7WvSKVRCM85gsteD8wYN2szJA0bMKhHhPssF46WWF8PpmDqLfJURbT3BlbkFJo9KHPInAzgDkYTmfNasHfU6JVkCG_RDLH0iSZh4mC6qrCOeOLS3pm5KzbQgFVuLM-KIB3fd8UAY";
-
-function getApiKey() {
-  if (typeof window === "undefined") return null;
-  return (
-    window.OPENAI_API_KEY ||
-    localStorage.getItem("openai_api_key") ||
-    OPENAI_API_KEY_PLACEHOLDER ||
-    null
-  );
-}
 
 function buildNpcSummary(npcs) {
   return npcs.map((n) => {
@@ -77,9 +66,6 @@ function extractFirstJsonArray(raw) {
 }
 
 export async function fetchTasksFromOpenAI(gameState) {
-  const apiKey = getApiKey();
-  if (!apiKey) return null;
-
   const npcSummary = buildNpcSummary(gameState.npcs);
   const travelProgress = Math.max(0, Math.min(1, gameState.plannedTravelToday / 10));
   const prompt = gameState.language === "ja"
@@ -138,8 +124,7 @@ Return JSON only, like:
   const resp = await fetch(OPENAI_ENDPOINT, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(body)
   });
@@ -187,9 +172,6 @@ Return JSON only, like:
 }
 
 export async function fetchTaskConversation(task, npcs, gameState) {
-  const apiKey = getApiKey();
-  if (!apiKey) return null;
-
   const speakerList = npcs
     .map((n) => `${n.name} (P${n.skills.physique}/I${n.skills.intellect}/C${n.skills.charisma}, health ${n.state.health}/5, morale ${n.state.morale}/10)`)
     .join("; ");
@@ -267,8 +249,7 @@ NPCs may disagree or even argue with each other, depending on their personalitie
   const resp = await fetch(OPENAI_ENDPOINT, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(body)
   });
@@ -306,9 +287,6 @@ NPCs may disagree or even argue with each other, depending on their personalitie
 }
 
 export async function fetchTaskFailureNarrative(task, npcs, gameState) {
-  const apiKey = getApiKey();
-  if (!apiKey) return null;
-
   const speakerList = npcs
     .map((n) => `${n.name} (P${n.skills.physique}/I${n.skills.intellect}/C${n.skills.charisma}, health ${n.state.health}/5, morale ${n.state.morale}/10)`)
     .join("; ");
@@ -352,8 +330,7 @@ Keep it grounded and concrete.
   const resp = await fetch(OPENAI_ENDPOINT, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(body)
   });
@@ -381,9 +358,6 @@ Keep it grounded and concrete.
 }
 
 export async function fetchTaskSuccessNarrative(task, npcs, gameState) {
-  const apiKey = getApiKey();
-  if (!apiKey) return null;
-
   const speakerList = npcs
     .map((n) => `${n.name} (P${n.skills.physique}/I${n.skills.intellect}/C${n.skills.charisma}, health ${n.state.health}/5, morale ${n.state.morale}/10)`)
     .join("; ");
@@ -426,8 +400,7 @@ Explain the success in concrete terms.
   const resp = await fetch(OPENAI_ENDPOINT, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(body)
   });
@@ -455,9 +428,6 @@ Explain the success in concrete terms.
 }
 
 export async function fetchRelationshipUpdate(npcA, npcB, task, outcome, gameState) {
-  const apiKey = getApiKey();
-  if (!apiKey) return null;
-
   const relA = npcA.relationships?.[npcB.id] || {};
   const relB = npcB.relationships?.[npcA.id] || {};
   const historyA = Array.isArray(relA.history) ? relA.history : [];
@@ -539,8 +509,7 @@ Reflect the outcome and slightly evolve the relationship text.
   const resp = await fetch(OPENAI_ENDPOINT, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(body)
   });
@@ -566,9 +535,6 @@ Reflect the outcome and slightly evolve the relationship text.
 }
 
 export async function fetchDiaryEntry(gameState) {
-  const apiKey = getApiKey();
-  if (!apiKey) return null;
-
   const npcSummary = buildNpcSummary(gameState.npcs);
   const moraleSnapshot = gameState.npcs
     .map((n) => `${n.name}: morale ${n.state.morale}/10, stamina ${n.state.stamina}/5, health ${n.state.health}/5`)
@@ -641,8 +607,7 @@ Relationship history: ${relationshipHistory || "none"}
   const resp = await fetch(OPENAI_ENDPOINT, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(body)
   });
@@ -671,9 +636,6 @@ Relationship history: ${relationshipHistory || "none"}
 }
 
 export async function fetchEndingCutscene(gameState, aliveNpcs, deadNpcs) {
-  const apiKey = getApiKey();
-  if (!apiKey) return null;
-
   const survivors = (aliveNpcs || []).map((n) => n.name).join(", ") || "none";
   const fallen = (deadNpcs || []).map((n) => n.name).join(", ") || "none";
   const relationshipSummary = (aliveNpcs || [])
@@ -746,8 +708,7 @@ Have the NPCs reflect on their journey and how their relationships changed.
   const resp = await fetch(OPENAI_ENDPOINT, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(body)
   });
