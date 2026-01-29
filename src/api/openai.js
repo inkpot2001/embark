@@ -1,9 +1,15 @@
 const OPENAI_ENDPOINT = "https://api.openai.com/v1/chat/completions";
 const OPENAI_MODEL = "gpt-3.5-turbo";
+const OPENAI_API_KEY_PLACEHOLDER = "sk-proj-NGnAeUoaoDcpsaV4aiG_R7WvSKVRCM85gsteD8wYN2szJA0bMKhHhPssF46WWF8PpmDqLfJURbT3BlbkFJo9KHPInAzgDkYTmfNasHfU6JVkCG_RDLH0iSZh4mC6qrCOeOLS3pm5KzbQgFVuLM-KIB3fd8UAY";
 
 function getApiKey() {
   if (typeof window === "undefined") return null;
-  return window.OPENAI_API_KEY || localStorage.getItem("openai_api_key") || null;
+  return (
+    window.OPENAI_API_KEY ||
+    localStorage.getItem("openai_api_key") ||
+    OPENAI_API_KEY_PLACEHOLDER ||
+    null
+  );
 }
 
 function buildNpcSummary(npcs) {
