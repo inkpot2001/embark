@@ -925,11 +925,11 @@ export function attachEventHandlers(gameState) {
     const taskId = dropTarget.dataset.taskId;
     const task = gameState.tasksToday.find((t) => t.id === taskId);
     if (!task) return;
-    if (task.id === "rest" && task.assignedNpcIds.length >= 1) {
+    if (task.id === "rest" && task.assignedNpcIds.length >= 2) {
       renderGame(gameState);
       return;
     }
-    if (task.assignedNpcIds.length >= 2) {
+    if (task.id !== "rest" && task.assignedNpcIds.length >= 2) {
       renderGame(gameState);
       return;
     }
